@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 import random
+import time
+
 
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
@@ -61,6 +63,7 @@ async def gay(ctx):
              'https://tenor.com/view/tyler-oakley-yay-gay-lgbt-gay-gif-4322816', 'https://tenor.com/view/homophobic-rock-lee-homophobic-mode-naruto-gif-18125915', 
              'https://media.giphy.com/media/m7e07TZRV20Xm/giphy.gif', 'https://media.giphy.com/media/89asT84PzDwwE/giphy.gif', 
              'https://tenor.com/view/fall-pass-out-tired-exhausted-dennis-gif-17764286', 'https://tenor.com/view/michael-the-office-gif-5323535']
+    random.seed(time.time())
     await ctx.send(random.choice(gayGifs))
 
 @bot.group()
