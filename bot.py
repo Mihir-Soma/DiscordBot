@@ -66,6 +66,22 @@ async def gay(ctx):
     random.seed(time.time())
     await ctx.send(random.choice(gayGifs))
 
+@bot.command()
+async def hermesConrad(ctx):
+    swtSmthSmplc=['Sweet llamas of the Bahamas!', 'Sweet lion of Zion!',
+                  'Sweet three-toed sloth of Ice Planet Hoth!','Sweet bongo of the Congo!',
+                  'Sweet Yeti of the Serengeti! Shes gone crazy-eddy in the headdy!',
+                  'Sweet guinea pig of Winnipeg!','Sweet gorilla of Manilla!',
+                  'Sweet manatee of Gallilee!','Sweet giant anteater of Santa Anita!','Sweet squid of Madrid!',
+                  'Great cow of Moscow!','S-s-s-s-s-sweet something of......someplace.','Sweet ghost of Babylon!', 
+                  'Sacred boa of West and East Samoa!', 'Sacred hog of Prague!', 'Cursed bacteria of Liberia!', 
+                  'Great bonda of Uganda!','Sweet honey bee of infinity!','Sweet fireball on Montreal!','Sweet kookaburra of Edinburgh!',
+                  'Sweet topology of cosmology!','Sweet coinidence of Port-au-Prince!','Sweet freak of Mozambique!',
+                  'Sweet orca of Mallorca!', 'Sweet she-cattle of Seattle!']
+    random.seed(time.time())
+    await ctx.send('*"'+random.choice(swtSmthSmplc)+'"*'+'-Hermes Conrad')
+
+
 @bot.group()
 async def cool(ctx):
     """Says if a user is cool.
