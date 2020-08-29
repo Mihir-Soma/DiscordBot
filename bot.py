@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import random
 import time
-
+import asyncio
 
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
@@ -83,10 +83,49 @@ async def hermesConrad(ctx):
 
 @bot.command()
 async def ticTacToe(ctx):
-    board =[' 1 ',' 2 ',' 3 ',' 4 ',' 5 ',' 6 ',' 7 ',' 8 ',' 9 ']
-    await ctx.send(board[0] + board[1] + board[2])
-    await ctx.send(board[3] + board[4] + board[5])
-    await ctx.send(board[6] + board[7] +  board[8])):
+    board=[
+           [0,0,0],
+           [0,0,0],
+           [0,0,0]
+        ]
+    reacts=[
+            ['1️⃣','2️⃣','3️⃣'],
+            ['4️⃣','5️⃣','6️⃣'],
+            ['7️⃣','8️⃣','9️⃣']
+        ]
+    p1=1
+    p2=1
+    while(p1<3 and p2<3):
+        print(board)
+        for count,i in enumerate(board):
+            s=''
+            for j in i:
+                if j == 0:
+                    s+='⬜'
+                elif j == 1:
+                    s+='❌'
+                else:
+                    s+='⭕'
+            m=await ctx.send(s)
+            for r in reacts[count]:
+                await m.add_reaction(r)
+        await ctx.send('------------------------')
+        
+        def check(reaction, user):
+            return user == ctx.author
+
+        try:
+            reaction, user = await bot.wait_for('reaction_add', timeout=120.0, check=check)
+        except asyncio.TimeoutError:
+            await ctx.send('*I win 💩*')
+            p2+=3
+        for count,i in enumerate(reacts):
+            for cnt,j in enumerate(i):
+                if reaction.emoji == j:
+                    board[count][cnt]=1
+                    
+
+    
 
 @bot.group()
 async def cool(ctx):
