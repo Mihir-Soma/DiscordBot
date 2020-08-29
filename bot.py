@@ -81,6 +81,12 @@ async def hermesConrad(ctx):
     random.seed(time.time())
     await ctx.send('*"'+random.choice(swtSmthSmplc)+'"*'+'-Hermes Conrad')
 
+@bot.command()
+async def ticTacToe(ctx):
+    board =[' 1 ',' 2 ',' 3 ',' 4 ',' 5 ',' 6 ',' 7 ',' 8 ',' 9 ']
+    await ctx.send(board[0] + board[1] + board[2])
+    await ctx.send(board[3] + board[4] + board[5])
+    await ctx.send(board[6] + board[7] +  board[8])):
 
 @bot.group()
 async def cool(ctx):
