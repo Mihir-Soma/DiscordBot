@@ -4,10 +4,14 @@ import random
 import time
 import asyncio
 
+com = discord.ext.commands
+
 description = '''An example bot to showcase the discord.ext.commands extension
 module.
 There are a number of utility commands being showcased here.'''
 bot = commands.Bot(command_prefix=':)', description=description)
+
+cogs = ['cogs.TicTacToe']
 
 @bot.event
 async def on_ready():
@@ -15,6 +19,12 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+    for c in cogs:
+        try:
+            bot.load_extension(c)
+            print('Loaded {}'.format(c))
+        except Exception:
+            print('Failed to load {}'.format(c))
 
 @bot.event
 async def on_message(msg):
@@ -23,6 +33,51 @@ async def on_message(msg):
             await msg.channel.send('shid')
     await bot.process_commands(msg)
 
+@bot.command()
+@commands.has_permissions(manage_guild=True)
+async def unload(ctx, cog:str):
+    try:
+        bot.unload_extension(cog)
+        await ctx.send('{} unloaded!'.format(cog))
+        
+    except Exception:
+        await ctx.send('{} failed to unload'.format(cog))
+
+@bot.command()
+@commands.has_permissions(manage_guild=True)
+async def reload(ctx, cog:str):
+    try:
+        bot.unload_extension(cog)
+        bot.load_extension(cog)
+        await ctx.send('{} reloaded!'.format(cog))
+
+    except com.ExtensionAlreadyLoaded:
+        await ctx.send('{} already loaded!'.format(cog))
+
+    except com.ExtensionNotFound:
+        await ctx.send('{} not found!'.format(cog))
+
+    except com.ExtensionFailed:
+        await ctx.send('{} failed to load!'.format(cog))
+
+@bot.command()
+@commands.has_permissions(manage_guild=True)
+async def load(ctx, cog:str):
+    try:
+        bot.load_extension(cog)
+        await ctx.send('{} loaded!'.format(cog))
+
+    except com.ExtensionAlreadyLoaded:
+        await ctx.send('{} already loaded!'.format(cog))
+
+    except com.ExtensionNotFound:
+        await ctx.send('{} not found!'.format(cog))
+
+    except com.ExtensionFailed:
+        await ctx.send('{} failed to load!'.format(cog))
+    
+    except Exception:
+        await ctx.send('{} failed to load!'.format(cog))
 
 @bot.command()
 async def add(ctx, left: int, right: int):
@@ -80,103 +135,6 @@ async def hermesConrad(ctx):
                   'Sweet orca of Mallorca!', 'Sweet she-cattle of Seattle!']
     random.seed(time.time())
     await ctx.send('*"'+random.choice(swtSmthSmplc)+'"*'+'-Hermes Conrad')
-
-@bot.command()
-async def ticTacToe(ctx):
-    board=[
-           [0,0,0],
-           [0,0,0],
-           [0,0,0]
-        ]
-    reacts=[
-            ['1️⃣','2️⃣','3️⃣'],
-            ['4️⃣','5️⃣','6️⃣'],
-            ['7️⃣','8️⃣','9️⃣']
-        ]
-    win=0
-    trn=0
-    while True: 
-        #prints out board
-        for count,i in enumerate(board):
-            s=''
-            for j in i:
-                if j == 0:
-                    s+='⬜'
-                elif j == 1:
-                    s+='❌'
-                else:
-                    s+='⭕'
-            m=await ctx.send(s)
-            for r in reacts[count]:
-                await m.add_reaction(r)
-        await ctx.send('------------------------')
-        
-        # displays win message
-        if win==1:
-            await ctx.send('*you win 😔*')
-            break
-        if win==2:
-            await ctx.send('*I win 💩*')
-            break
-        
-        # next turn button
-        if trn%2 != 0:
-            nt=await ctx.send('next turn')
-            await nt.add_reaction('👉')
-        
-        # check reactions
-        def check(reaction, user):
-            return user == ctx.author
-
-        try:
-            reaction, user = await bot.wait_for('reaction_add', timeout=30.0, check=check)
-        except asyncio.TimeoutError:
-            win=2
-        
-        # bot's turn
-        b2=[]
-        if trn%2!=0:
-            for count,i in enumerate(board):
-                for cnt,j in enumerate(i):
-                    if j==0:
-                        b2.append((count,cnt))
-            x,y=random.choice(b2)
-            board[x][y]=2
-            trn+=1     
-
-        # user's turn 
-        elif trn%2==0:
-            for count,i in enumerate(reacts):
-                for cnt,j in enumerate(i):
-                    if reaction.emoji == j and board[count][cnt]==0:
-                        board[count][cnt]=1
-                        trn+=1
-                    elif reaction.emoji == j and board[count][cnt]!=0:
-                        await ctx.send('*choose an open space*')
-
-        # win conditions
-        for i in board:
-            if i[1]==i[0] and i[2]==i[0] and i[0]!=0:
-                if i[0]==1:
-                    win=1
-                else:
-                    win=2
-        for i in range(0,2):
-            if board[0][i]==board[1][i] and board[0][i]==board[2][i] and board[0][i]!=0:
-                if board[0][i]==1:
-                    win=1
-                else:
-                    win=2
-        if board[0][0]==board[1][1] and board[0][0]==board[2][2] and board[0][0]!=0:
-            if board[0][0]==1:
-                win=1
-            else:
-                win=2     
-        if board[0][2]==board[1][1] and board[0][2]==board[2][0] and board[0][2]!=0:
-            if board[0][2]==1:
-                win=1
-            else:
-                win=2                 
 
 @bot.group()
 async def cool(ctx):
