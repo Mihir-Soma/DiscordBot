@@ -11,7 +11,7 @@ module.
 There are a number of utility commands being showcased here.'''
 bot = commands.Bot(command_prefix=':)', description=description)
 
-cogs = ['cogs.TicTacToe']
+cogs = ['cogs.TicTacToe', 'cogs.Gamble']
 
 @bot.event
 async def on_ready():
