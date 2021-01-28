@@ -8,6 +8,10 @@ from discord.ext import commands
 
 active = False
 bets = {}    
+outcome1 = ""
+outcome2 = ""
+odds1 = 0
+odds2 = 0
 
 class Casino(commands.Cog):
     def __init__(self, bot):
@@ -38,39 +42,61 @@ class Casino(commands.Cog):
     async def bookie(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send("*invalid bookie command*")
-         
+
     @bookie.command()
-    async def startBet(self,ctx, outcome1: str, outcome2: str):
-        await ctx.send("*place your bets! " + outcome1 + " or " + outcome2 +"?*")
+    async def startBet(self,ctx, o1: str, o2: str):
+        global active, outcome1, outcome2
+        outcome1 = o1
+        outcome2 = o2
+        await ctx.send("*place your bets! " + outcome1 + " or " + outcome2 +"?* \n`type :)bookie placeBet <amount> <choice>`")
         active = True
-        await ctx.send(str(active))
 
     @bookie.command()
     async def placeBet(self,ctx, amount: int, onChoice: str):
+        global active
         with open("users.json", "r") as f:
             users = json.load(f)
         authorid=str(ctx.author.id)
-        await ctx.send(str(active))
-        if active == True:
+
+        if active == True and onChoice == (outcome1 or outcome2):
             if amount <= users[authorid]["guap"] and amount > 0:
-                await ctx.send(ctx.author.mention + ' *your bet is ' + str(amount) + "*")
-                users[authorid]["guap"]-=amount
-                await ctx.send(users[authorid]["guap"])
+                users[authorid]["guap"] -= amount
                 with open("users.json", "w") as f:
                     json.dump(users, f)
                 bets[authorid] = {onChoice: amount}
+                await ctx.send(ctx.author.mention + ' *your bet is ' + str(amount) + "* \n*you have ₲" + str(users[authorid]["guap"])+" left*")   
+
             elif amount > users[authorid]["guap"]:
                 await ctx.send("*you don't have enough Guap*")
+
             else:
                 await ctx.send("*invalid bet*")
+
         elif active == False:
             await ctx.send("*nothing to bet on!*")
 
     @bookie.command()
+    async def odds(self,ctx):
+        global odds1, odds2
+        for bet in bets:
+            for choice in bet[bet]:
+                if bets[i] == outcome1:
+                    odds1+=bets[bet][choice]
+                if bets[i] == outcome2:
+                    odds+=best[bet][choice]
+        await ctx.send("*the odds are* " + str(odds1) + ":" + str(odds2))
+
+    @bookie.command()
     async def closeBet(self,ctx):
+        global active
         await ctx.send("*bets can no longer be placed*")
         active = False
 
+    @bookie.command()
+    async def winners(self,ctx, winner: str):
+        global outcome1, outcome2
+        
+        await ctx.send("")
 
 def setup(bot):
     bot.add_cog(Casino(bot))
