@@ -113,15 +113,6 @@ async def joined(ctx, member: discord.Member):
     await ctx.send('{0.name} joined in {0.joined_at}'.format(member))
 
 @bot.command()
-async def gay(ctx):
-    gayGifs=['https://tenor.com/view/trolling-iam-homophobic-madden-gif-16547625', 'https://tenor.com/view/twitch-xqc-suck-gif-13965169', 
-             'https://tenor.com/view/tyler-oakley-yay-gay-lgbt-gay-gif-4322816', 'https://tenor.com/view/homophobic-rock-lee-homophobic-mode-naruto-gif-18125915', 
-             'https://media.giphy.com/media/m7e07TZRV20Xm/giphy.gif', 'https://media.giphy.com/media/89asT84PzDwwE/giphy.gif', 
-             'https://tenor.com/view/fall-pass-out-tired-exhausted-dennis-gif-17764286', 'https://tenor.com/view/michael-the-office-gif-5323535']
-    random.seed(time.time())
-    await ctx.send(random.choice(gayGifs))
-
-@bot.command()
 async def hermesConrad(ctx):
     swtSmthSmplc=['Sweet llamas of the Bahamas!', 'Sweet lion of Zion!',
                   'Sweet three-toed sloth of Ice Planet Hoth!','Sweet bongo of the Congo!',

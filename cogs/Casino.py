@@ -17,6 +17,7 @@ class Casino(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    #registers a new gambler
     @commands.command()
     async def register(self,ctx):
         with open("users.json", "r") as f:
@@ -31,6 +32,7 @@ class Casino(commands.Cog):
         else:
             await ctx.send("*you are already registered!*")
 
+    #returns the users balance
     @commands.command()
     async def balance(self,ctx):
         with open("users.json", "r") as f:
@@ -38,11 +40,13 @@ class Casino(commands.Cog):
         authorid = str(ctx.author.id)
         await ctx.send(ctx.author.mention + '* you have ₲'+ str(users[authorid]["guap"])+"*")
 
+    #group of commands used to bet
     @commands.group()
     async def bookie(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send("*invalid bookie command*")
 
+    #initiates a bet with two outcomes
     @bookie.command()
     async def startBet(self,ctx, o1: str, o2: str):
         global active, outcome1, outcome2
@@ -51,6 +55,7 @@ class Casino(commands.Cog):
         await ctx.send("*place your bets! " + outcome1 + " or " + outcome2 +"?* \n`type :)bookie placeBet <amount> <choice>`")
         active = True
 
+    #takes a bet from a user and subtracts it from their balance
     @bookie.command()
     async def placeBet(self,ctx, amount: int, onChoice: str):
         global active
@@ -64,7 +69,7 @@ class Casino(commands.Cog):
                 with open("users.json", "w") as f:
                     json.dump(users, f)
                 bets[authorid] = {onChoice: amount}
-                await ctx.send(ctx.author.mention + ' *your bet is ' + str(amount) + "* \n*you have ₲" + str(users[authorid]["guap"])+" left*")   
+                await ctx.send(ctx.author.mention + ' *your bet is ₲' + str(amount) + "* \n*you have ₲" + str(users[authorid]["guap"])+" left*")   
 
             elif amount > users[authorid]["guap"]:
                 await ctx.send("*you don't have enough Guap*")
@@ -74,6 +79,13 @@ class Casino(commands.Cog):
 
         elif active == False:
             await ctx.send("*nothing to bet on!*")
+    
+    #closes the bet
+    @bookie.command()
+    async def closeBet(self,ctx):
+        global active
+        await ctx.send("*bets can no longer be placed*")
+        active = False
 
     @bookie.command()
     async def odds(self,ctx):
@@ -87,15 +99,8 @@ class Casino(commands.Cog):
         await ctx.send("*the odds are* " + str(odds1) + ":" + str(odds2))
 
     @bookie.command()
-    async def closeBet(self,ctx):
-        global active
-        await ctx.send("*bets can no longer be placed*")
-        active = False
-
-    @bookie.command()
     async def winners(self,ctx, winner: str):
-        global outcome1, outcome2
-        
+        global outcome1, outcome2   
         await ctx.send("")
 
 def setup(bot):
