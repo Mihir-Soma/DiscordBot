@@ -13,6 +13,7 @@ outcome1 = ""
 outcome2 = ""
 pool1 = 0
 pool2 = 0
+bm = "bookmaker"
 
 class Casino(commands.Cog):
     def __init__(self, bot):
@@ -58,16 +59,23 @@ class Casino(commands.Cog):
     #initiates a bet with two outcomes
     @bookie.command()
     async def startBet(self,ctx, o1: str, o2: str):
-        global active, outcome1, outcome2, pool1, pool2
-        if active == 0:
-            active = 1
-            pool1 = 0
-            pool2 = 0
-            outcome1 = o1
-            outcome2 = o2
-            await ctx.send("*place your bets! " + outcome1 + " or " + outcome2 +"?* \n`type :)bookie placeBet <amount> <choice>`")
-        else: 
-            await ctx.send("*a bet is already active*")
+        global active, outcome1, outcome2, pool1, pool2, bm
+        bk = False
+        for role in ctx.author.roles:
+            if role.name == bm:
+                bk = True
+        if bk == True:
+            if active == 0:
+                active = 1
+                pool1 = 0
+                pool2 = 0
+                outcome1 = o1
+                outcome2 = o2
+                await ctx.send("*place your bets! " + outcome1 + " or " + outcome2 +"?* \n`type :)bookie placeBet <amount> <choice>`")
+            else: 
+                await ctx.send("*a bet is already active*")
+        if bk == False:
+            await ctx.send("*you don't have the right roles to start a bet*")
 
     #helper function which returns the odds in outcome1:outcome2 form
     def odd(self):
@@ -122,24 +130,38 @@ class Casino(commands.Cog):
     #closes the bet
     @bookie.command(aliases = ["CloseBet", "closebet", "Closebet"])
     async def closeBet(self,ctx):
-        global active
-        await ctx.send("*bets can no longer be placed*")
-        active = 2
+        global active, bm
+        bk = False
+        for role in ctx.author.roles:
+            if role.name == bm:
+                bk = True
+        if bk == True:
+            await ctx.send("*bets can no longer be placed*")
+            active = 2
+        if bk == False:
+            await ctx.send("*you don't have the right roles to close a bet*")
 
     #ends the bet and pays out gamblers
     @bookie.command()
     async def endBet(self,ctx, winner: str):
-        global outcome1, outcome2, pool1, pool2, bets
-        if winner == outcome1:
-            coef = pool2/pool1
-        else:
-            coef = pool1/pool2
+        global outcome1, outcome2, pool1, pool2, bets, bm
+        bk = False
+        for role in ctx.author.roles:
+            if role.name == bm:
+                bk = True
+        if bk == True:
+            if winner == outcome1:
+                coef = pool2/pool1
+            else:
+                coef = pool1/pool2
 
-        for user in bets:
-            if bets[user][0] == winner:
-                profit = int(bets[user][1]*coef)
-                self.addGuap(profit+bets[user][1], user)
-                await ctx.send("<@!" + user + "> *earned " + str(profit+bets[user][1]) + "*")
+            for user in bets:
+                if bets[user][0] == winner:
+                    profit = int(bets[user][1]*coef)
+                    self.addGuap(profit+bets[user][1], user)
+                    await ctx.send("<@!" + user + "> *earned " + str(profit+bets[user][1]) + "*")
+        if bk == False:
+            await ctx.send("*you don't have the right roles to end a bet*")    
 
 def setup(bot):
     bot.add_cog(Casino(bot))
